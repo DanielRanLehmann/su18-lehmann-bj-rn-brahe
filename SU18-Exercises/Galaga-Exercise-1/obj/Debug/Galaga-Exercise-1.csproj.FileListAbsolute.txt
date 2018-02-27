@@ -1,0 +1,10 @@
+/Users/danielranlehmann/Desktop/su18-lehmann-wadmark-brahe/SU18-Exercises/Galaga-Exercise-1/obj/Debug/Galaga-Exercise-1.csprojResolveAssemblyReference.cache
+/Users/danielranlehmann/Desktop/su18-lehmann-wadmark-brahe/SU18-Exercises/Galaga-Exercise-1/obj/Debug/Galaga-Exercise-1.csproj.CoreCompileInputs.cache
+/Users/danielranlehmann/Desktop/su18-lehmann-wadmark-brahe/SU18-Exercises/Galaga-Exercise-1/bin/Debug/Galaga_Exercise_1.exe
+/Users/danielranlehmann/Desktop/su18-lehmann-wadmark-brahe/SU18-Exercises/Galaga-Exercise-1/bin/Debug/Galaga_Exercise_1.pdb
+/Users/danielranlehmann/Desktop/su18-lehmann-wadmark-brahe/SU18-Exercises/Galaga-Exercise-1/bin/Debug/DIKUArcade.dll
+/Users/danielranlehmann/Desktop/su18-lehmann-wadmark-brahe/SU18-Exercises/Galaga-Exercise-1/bin/Debug/OpenTK.dll
+/Users/danielranlehmann/Desktop/su18-lehmann-wadmark-brahe/SU18-Exercises/Galaga-Exercise-1/bin/Debug/DIKUArcade.pdb
+/Users/danielranlehmann/Desktop/su18-lehmann-wadmark-brahe/SU18-Exercises/Galaga-Exercise-1/bin/Debug/OpenTK.xml
+/Users/danielranlehmann/Desktop/su18-lehmann-wadmark-brahe/SU18-Exercises/Galaga-Exercise-1/obj/Debug/Galaga_Exercise_1.exe
+/Users/danielranlehmann/Desktop/su18-lehmann-wadmark-brahe/SU18-Exercises/Galaga-Exercise-1/obj/Debug/Galaga_Exercise_1.pdb
