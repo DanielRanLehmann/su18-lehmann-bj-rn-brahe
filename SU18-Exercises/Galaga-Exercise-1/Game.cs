@@ -8,8 +8,9 @@ using DIKUArcade.Math;
 
 using System.Collections.Generic;
 using DIKUArcade.EventBus;
+using DIKUArcade.Timers;
 
-
+// using DIKUArcade.Timers.GameTimer;
 
 namespace Galaga_Exercise_1 {
 
@@ -21,6 +22,8 @@ namespace Galaga_Exercise_1 {
 
         private List<Image> enemyStrides;
         private EntityContainer enemies;
+
+        private GameTimer gameTimer;
         
         public Game() {
             // look at the Window.cs file for possible constructors.
@@ -52,6 +55,8 @@ namespace Galaga_Exercise_1 {
             eventBus.Subscribe(GameEventType.InputEvent, this);
             eventBus.Subscribe(GameEventType.WindowEvent, this);
 
+            gameTimer = new GameTimer(60, 60);
+
         }
         
         private void AddEnemies() {
@@ -69,8 +74,36 @@ namespace Galaga_Exercise_1 {
         public void GameLoop() {
             while (win.IsRunning()) {
                 
-                eventBus.ProcessEvents(); // this will call ProcessEvent()
+                gameTimer.MeasureTime();
+
+                while (gameTimer.ShouldUpdate()) {
+                    win.PollEvents();
+                    eventBus.ProcessEvents();
+                    
+                    // game logic
+                    player.Shape.Move();
+                    
+                }
+
+                if (gameTimer.ShouldRender()) {
+                    win.Clear();
+                    // render game entities
+                    player.RenderEntity();
+                    enemies.RenderEntities();
+                    win.SwapBuffers();
+                }
                 
+                if (gameTimer.ShouldReset()) {
+                    // 1 second has passed - display last captured ups and fps
+                    win.Title = "Galaga | UPS: " + gameTimer.CapturedUpdates +
+                                ", FPS: " + gameTimer.CapturedFrames;
+                }
+
+               
+                /*
+                eventBus.ProcessEvents(); // this will call ProcessEvent()
+                    
+                orphane code
                 win.PollEvents();
                 win.Clear();
                 
@@ -79,6 +112,7 @@ namespace Galaga_Exercise_1 {
                 enemies.RenderEntities();
                 
                 win.SwapBuffers();
+                */
 
             }
         }
