@@ -17,7 +17,10 @@ namespace Galaga_Exercise_1 {
     public class Game : IGameEventProcessor<object> {
 
         private Window win;
-        private Entity player;
+        
+        // private Entity player;
+        private Player player;
+        
         private GameEventBus<object> eventBus;
 
         private List<Image> enemyStrides;
@@ -31,11 +34,12 @@ namespace Galaga_Exercise_1 {
             // which is most easily done using a predefined aspect ratio.
             
             win = new Window("Galaga Game", 500, 500);
-
+            
+            /*
             player = new Entity(
                 new DynamicShape(new Vec2F(0.45f, 0.1f), new Vec2F(0.1f, 0.1f)),
                 new Image(Path.Combine("Assets", "Images", "Player.png")));
-
+            */
             
             enemyStrides = ImageStride.CreateStrides(4,
                 Path.Combine("Assets", "Images", "BlueMonster.png"));
@@ -51,9 +55,13 @@ namespace Galaga_Exercise_1 {
                 GameEventType.PlayerEvent
             });
 
+            
+            player = new Player();
+            
             win.RegisterEventBus(eventBus);
             eventBus.Subscribe(GameEventType.InputEvent, this);
             eventBus.Subscribe(GameEventType.WindowEvent, this);
+            eventBus.Subscribe(GameEventType.PlayerEvent, player);
 
             gameTimer = new GameTimer(60, 60);
 
@@ -81,14 +89,15 @@ namespace Galaga_Exercise_1 {
                     eventBus.ProcessEvents();
                     
                     // game logic
-                    player.Shape.Move();
-                    
+                    // player.Shape.Move();
+                    player.entity.Shape.Move();
                 }
 
                 if (gameTimer.ShouldRender()) {
                     win.Clear();
                     // render game entities
-                    player.RenderEntity();
+                    // player.RenderEntity();
+                    player.entity.RenderEntity();
                     enemies.RenderEntities();
                     win.SwapBuffers();
                 }
@@ -162,28 +171,28 @@ namespace Galaga_Exercise_1 {
                 break;
                 
              case "KEY_A":
-                 if (!EntityOutOfBounds(player, "EDGE_LEFT")) {
-                     player.Shape.MoveX(-0.010f);
+                 if (!EntityOutOfBounds(player.entity, "EDGE_LEFT")) {
+                     player.entity.Shape.MoveX(-0.010f);
                  }
                  break;
                  
               case "KEY_D":
-                  if (!EntityOutOfBounds(player, "EDGE_RIGHT")) {
-                      player.Shape.MoveX(0.010f);
+                  if (!EntityOutOfBounds(player.entity, "EDGE_RIGHT")) {
+                      player.entity.Shape.MoveX(0.010f);
                   }
 
                   break;
                   
               case "KEY_W":
-                  if (!EntityOutOfBounds(player, "EDGE_TOP")) {
-                      player.Shape.MoveY(0.010f);
+                  if (!EntityOutOfBounds(player.entity, "EDGE_TOP")) {
+                      player.entity.Shape.MoveY(0.010f);
                   }
 
                   break;
                   
               case "KEY_S":
-                  if (!EntityOutOfBounds(player, "EDGE_BOTTOM")) {
-                      player.Shape.MoveY(-0.010f);
+                  if (!EntityOutOfBounds(player.entity, "EDGE_BOTTOM")) {
+                      player.entity.Shape.MoveY(-0.010f);
                   }
 
                   break;
@@ -193,7 +202,7 @@ namespace Galaga_Exercise_1 {
 
         public void KeyRelease(string key) {
             // match on e.g. "KEY_UP", "KEY_1", "KEY_A", etc.
-            player.Shape.MoveX(0.0f);
+            player.entity.Shape.MoveX(0.0f);
         }
 
         public void ProcessEvent(GameEventType eventType, GameEvent<object> gameEvent) {
