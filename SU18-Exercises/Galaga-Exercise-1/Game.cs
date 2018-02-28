@@ -19,25 +19,27 @@ namespace Galaga_Exercise_1 {
         private Entity player;
         private GameEventBus<object> eventBus;
 
-        private uint winWidth;
-        private uint winHeight;
+        private List<Image> enemyStrides;
+        private EntityContainer enemies;
         
-
         public Game() {
             // look at the Window.cs file for possible constructors.
             // We recommend using 500 × 500 as window dimensions,
             // which is most easily done using a predefined aspect ratio.
-
-            this.winWidth = 500;
-            this.winHeight = 500;
             
-            win = new Window("Galaga Game", winWidth, winHeight);
+            win = new Window("Galaga Game", 500, 500);
 
             player = new Entity(
                 new DynamicShape(new Vec2F(0.45f, 0.1f), new Vec2F(0.1f, 0.1f)),
                 new Image(Path.Combine("Assets", "Images", "Player.png")));
 
-
+            
+            enemyStrides = ImageStride.CreateStrides(4,
+                Path.Combine("Assets", "Images", "BlueMonster.png"));
+            enemies = new EntityContainer();
+            
+            AddEnemies();
+            
             eventBus = new GameEventBus<object>();
 
             eventBus.InitializeEventBus(new List<GameEventType>() {
@@ -51,6 +53,18 @@ namespace Galaga_Exercise_1 {
             eventBus.Subscribe(GameEventType.WindowEvent, this);
 
         }
+        
+        private void AddEnemies() {
+            // create the desired number of enemies here. Remember:
+            //   - normalised coordinates
+            //   - add them to the entity container
+                         
+            enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.10f, 0.1f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
+            enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.30f, 0.2f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
+            enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.90f, 0.3f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
+            enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.05f, 0.6f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
+            
+        }
 
         public void GameLoop() {
             while (win.IsRunning()) {
@@ -62,14 +76,14 @@ namespace Galaga_Exercise_1 {
                 
                 player.Shape.Move();
                 player.RenderEntity();
-                
-                
+                enemies.RenderEntities();
                 
                 win.SwapBuffers();
 
             }
         }
-
+           
+        // helper method
         public bool EntityOutOfBounds(Entity e, string edgeKey) {
             
             // defensive programming goes here. check for nullability, or cornerKey specification?
@@ -141,10 +155,6 @@ namespace Galaga_Exercise_1 {
                   break;
 
             }
-
-            // match on e.g. "KEY_UP", "KEY_1", "KEY_A", etc.
-            // TODO: use this method to start moving your player object
-            // player.Shape.MoveX(0.0001f); // choose a fittingly small number
         }
 
         public void KeyRelease(string key) {
