@@ -21,8 +21,7 @@ namespace Galaga_Exercise_1 {
         }
         public void ProcessEvent(GameEventType eventType, GameEvent<object> gameEvent) {
             if (eventType == GameEventType.PlayerEvent) {
-                
-                // do something fancy here.
+                // do something fancy..
             } 
         }
         

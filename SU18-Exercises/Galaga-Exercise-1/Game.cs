@@ -8,6 +8,7 @@ using DIKUArcade.Math;
 
 using System.Collections.Generic;
 using DIKUArcade.EventBus;
+using DIKUArcade.Physics;
 using DIKUArcade.Timers;
 
 // using DIKUArcade.Timers.GameTimer;
@@ -25,6 +26,10 @@ namespace Galaga_Exercise_1 {
 
         private List<Image> enemyStrides;
         private EntityContainer enemies;
+        
+        // private List<Image> projectileStrides;
+        private Image imageShot;
+        private EntityContainer playerShots;
 
         private GameTimer gameTimer;
         
@@ -43,10 +48,13 @@ namespace Galaga_Exercise_1 {
             
             enemyStrides = ImageStride.CreateStrides(4,
                 Path.Combine("Assets", "Images", "BlueMonster.png"));
+           
             enemies = new EntityContainer();
-            
-            AddEnemies();
-            
+           
+            // projectileStrides = ImageStride.CreateStrides(1, Path.Combine("Assets", "Images", "BulletRed2.png"));
+            imageShot = new Image(Path.Combine("Assets", "Images", "BulletRed2.png"));
+            playerShots = new EntityContainer();
+           
             eventBus = new GameEventBus<object>();
 
             eventBus.InitializeEventBus(new List<GameEventType>() {
@@ -57,6 +65,7 @@ namespace Galaga_Exercise_1 {
 
             
             player = new Player();
+            AddEnemies();
             
             win.RegisterEventBus(eventBus);
             eventBus.Subscribe(GameEventType.InputEvent, this);
@@ -99,6 +108,15 @@ namespace Galaga_Exercise_1 {
                     // player.RenderEntity();
                     player.entity.RenderEntity();
                     enemies.RenderEntities();
+                    playerShots.RenderEntities(); // sure it's the right place to put it?
+                    
+                    foreach (Entity playerShot in playerShots) {
+                        playerShot.Shape.MoveY(0.010f);
+                    }
+                    
+                    // IterateShots();
+                    playerShots.Iterate(IterateShots);
+                    
                     win.SwapBuffers();
                 }
                 
@@ -196,8 +214,62 @@ namespace Galaga_Exercise_1 {
                   }
 
                   break;
+                  
+              case "KEY_SPACE":
 
+                  DynamicShape shape = new DynamicShape(new Vec2F(
+                          player.entity.Shape.Position.X + (player.entity.Shape.Extent.X / 2.0f),
+                          player.entity.Shape.Position.Y + player.entity.Shape.Extent.Y),
+                      new Vec2F(0.008f, 0.027f), new Vec2F(0.0f, 0.01f));
+                  
+                  playerShots.AddDynamicEntity(
+                      shape,
+                      imageShot);
+                  
+                  
+                  break;
             }
+        }
+        
+        public void IterateShots(Entity entity) {
+            Entity shot = entity;
+            
+            bool outofBounds = false;
+            bool didCollide = false;
+            
+            if (EntityOutOfBounds(shot, "EDGE_TOP")) {
+                shot.DeleteEntity();
+                
+            } else {
+               
+                foreach (Entity enemy in enemies) {
+                        
+                    CollisionData collisionData = CollisionDetection.Aabb((DynamicShape)shot.Shape, enemy.Shape);
+                    if (collisionData.Collision) {
+                        
+                        shot.DeleteEntity();
+                        
+                        enemy.DeleteEntity();
+                        enemies.Iterate(IterateEnemies);
+                        
+                    }
+                }
+            }
+
+            // if none of the cases above, do this.
+            if (!outofBounds && !didCollide) {
+                shot.Shape.Move();    
+            }
+            
+        }
+
+        // what the fuck is going on here, but hey it works!
+        public void IterateEnemies(Entity entity) {
+            if (entity.IsDeleted())
+            {
+                entity.DeleteEntity();    
+            }
+            
         }
 
         public void KeyRelease(string key) {
