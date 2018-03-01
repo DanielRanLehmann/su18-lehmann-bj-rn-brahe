@@ -30,7 +30,13 @@ namespace Galaga_Exercise_1 {
         // private List<Image> projectileStrides;
         private Image imageShot;
         private EntityContainer playerShots;
-
+        
+        
+        private List<Image> explosionStrides;
+        private AnimationContainer explosions;
+        
+        private int explosionLength = 500;
+        
         private GameTimer gameTimer;
         
         public Game() {
@@ -54,6 +60,12 @@ namespace Galaga_Exercise_1 {
             // projectileStrides = ImageStride.CreateStrides(1, Path.Combine("Assets", "Images", "BulletRed2.png"));
             imageShot = new Image(Path.Combine("Assets", "Images", "BulletRed2.png"));
             playerShots = new EntityContainer();
+            
+            explosionStrides = ImageStride.CreateStrides(8,
+                Path.Combine("Assets", "Images", "Explosion.png"));
+            
+            explosions = new AnimationContainer(explosionLength);
+            
            
             eventBus = new GameEventBus<object>();
 
@@ -87,6 +99,13 @@ namespace Galaga_Exercise_1 {
             enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.05f, 0.6f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
             
         }
+        
+        public void AddExplosion(float posX, float posY,
+            float extentX, float extentY) {
+            explosions.AddAnimation(
+                new StationaryShape(posX, posY, extentX, extentY), explosionLength,
+                new ImageStride(explosionLength / 8, explosionStrides));
+        }
 
         public void GameLoop() {
             while (win.IsRunning()) {
@@ -109,6 +128,8 @@ namespace Galaga_Exercise_1 {
                     player.entity.RenderEntity();
                     enemies.RenderEntities();
                     playerShots.RenderEntities(); // sure it's the right place to put it?
+                    
+                    explosions.RenderAnimations(); // sure it's the right place to put it?
                     
                     foreach (Entity playerShot in playerShots) {
                         playerShot.Shape.MoveY(0.010f);
@@ -248,11 +269,15 @@ namespace Galaga_Exercise_1 {
                     CollisionData collisionData = CollisionDetection.Aabb((DynamicShape)shot.Shape, enemy.Shape);
                     if (collisionData.Collision) {
                         
+                        AddExplosion(enemy.Shape.Position.X, enemy.Shape.Position.Y,
+                            enemy.Shape.Extent.X, enemy.Shape.Extent.Y);
+                        
                         shot.DeleteEntity();
                         
                         enemy.DeleteEntity();
                         enemies.Iterate(IterateEnemies);
 
+                        
                         didCollide = true;
                         break;
                     }
