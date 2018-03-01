@@ -11,15 +11,12 @@ using DIKUArcade.EventBus;
 using DIKUArcade.Physics;
 using DIKUArcade.Timers;
 
-// using DIKUArcade.Timers.GameTimer;
-
 namespace Galaga_Exercise_1 {
 
     public class Game : IGameEventProcessor<object> {
 
         private Window win;
         
-        // private Entity player;
         private Player player;
         
         private GameEventBus<object> eventBus;
@@ -27,10 +24,8 @@ namespace Galaga_Exercise_1 {
         private List<Image> enemyStrides;
         private EntityContainer enemies;
         
-        // private List<Image> projectileStrides;
         private Image imageShot;
         private EntityContainer playerShots;
-        
         
         private List<Image> explosionStrides;
         private AnimationContainer explosions;
@@ -40,24 +35,14 @@ namespace Galaga_Exercise_1 {
         private GameTimer gameTimer;
         
         public Game() {
-            // look at the Window.cs file for possible constructors.
-            // We recommend using 500 × 500 as window dimensions,
-            // which is most easily done using a predefined aspect ratio.
             
             win = new Window("Galaga Game", 500, 500);
-            
-            /*
-            player = new Entity(
-                new DynamicShape(new Vec2F(0.45f, 0.1f), new Vec2F(0.1f, 0.1f)),
-                new Image(Path.Combine("Assets", "Images", "Player.png")));
-            */
             
             enemyStrides = ImageStride.CreateStrides(4,
                 Path.Combine("Assets", "Images", "BlueMonster.png"));
            
             enemies = new EntityContainer();
-           
-            // projectileStrides = ImageStride.CreateStrides(1, Path.Combine("Assets", "Images", "BulletRed2.png"));
+          
             imageShot = new Image(Path.Combine("Assets", "Images", "BulletRed2.png"));
             playerShots = new EntityContainer();
             
@@ -89,10 +74,6 @@ namespace Galaga_Exercise_1 {
         }
         
         private void AddEnemies() {
-            // create the desired number of enemies here. Remember:
-            //   - normalised coordinates
-            //   - add them to the entity container
-                         
             enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.10f, 0.1f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
             enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.30f, 0.2f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
             enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.90f, 0.3f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
@@ -116,59 +97,36 @@ namespace Galaga_Exercise_1 {
                     win.PollEvents();
                     eventBus.ProcessEvents();
                     
-                    // game logic
-                    // player.Shape.Move();
-                    player.entity.Shape.Move();
+                    player.Entity.Shape.Move();
                 }
 
                 if (gameTimer.ShouldRender()) {
                     win.Clear();
-                    // render game entities
-                    // player.RenderEntity();
-                    player.entity.RenderEntity();
-                    enemies.RenderEntities();
-                    playerShots.RenderEntities(); // sure it's the right place to put it?
                     
-                    explosions.RenderAnimations(); // sure it's the right place to put it?
+                    player.Entity.RenderEntity();
+                    enemies.RenderEntities();
+                    playerShots.RenderEntities(); 
+                    
+                    explosions.RenderAnimations();
                     
                     foreach (Entity playerShot in playerShots) {
                         playerShot.Shape.MoveY(0.010f);
                     }
-                    
-                    // IterateShots();
+                   
                     playerShots.Iterate(IterateShots);
                     
                     win.SwapBuffers();
                 }
                 
                 if (gameTimer.ShouldReset()) {
-                    // 1 second has passed - display last captured ups and fps
                     win.Title = "Galaga | UPS: " + gameTimer.CapturedUpdates +
                                 ", FPS: " + gameTimer.CapturedFrames;
                 }
-
-               
-                /*
-                eventBus.ProcessEvents(); // this will call ProcessEvent()
-                    
-                orphane code
-                win.PollEvents();
-                win.Clear();
-                
-                player.Shape.Move();
-                player.RenderEntity();
-                enemies.RenderEntities();
-                
-                win.SwapBuffers();
-                */
-
             }
         }
            
         // helper method
         public bool EntityOutOfBounds(Entity e, string edgeKey) {
-            
-            // defensive programming goes here. check for nullability, or cornerKey specification?
             if (edgeKey.Length == 0) {
                 throw new ArgumentOutOfRangeException($"Undefined or unknown edgeKey {edgeKey}");
             }
@@ -210,28 +168,28 @@ namespace Galaga_Exercise_1 {
                 break;
                 
              case "KEY_A":
-                 if (!EntityOutOfBounds(player.entity, "EDGE_LEFT")) {
-                     player.entity.Shape.MoveX(-0.010f);
+                 if (!EntityOutOfBounds(player.Entity, "EDGE_LEFT")) {
+                     player.Entity.Shape.MoveX(-0.010f);
                  }
                  break;
                  
               case "KEY_D":
-                  if (!EntityOutOfBounds(player.entity, "EDGE_RIGHT")) {
-                      player.entity.Shape.MoveX(0.010f);
+                  if (!EntityOutOfBounds(player.Entity, "EDGE_RIGHT")) {
+                      player.Entity.Shape.MoveX(0.010f);
                   }
 
                   break;
                   
               case "KEY_W":
-                  if (!EntityOutOfBounds(player.entity, "EDGE_TOP")) {
-                      player.entity.Shape.MoveY(0.010f);
+                  if (!EntityOutOfBounds(player.Entity, "EDGE_TOP")) {
+                      player.Entity.Shape.MoveY(0.010f);
                   }
 
                   break;
                   
               case "KEY_S":
-                  if (!EntityOutOfBounds(player.entity, "EDGE_BOTTOM")) {
-                      player.entity.Shape.MoveY(-0.010f);
+                  if (!EntityOutOfBounds(player.Entity, "EDGE_BOTTOM")) {
+                      player.Entity.Shape.MoveY(-0.010f);
                   }
 
                   break;
@@ -239,8 +197,8 @@ namespace Galaga_Exercise_1 {
               case "KEY_SPACE":
 
                   DynamicShape shape = new DynamicShape(new Vec2F(
-                          player.entity.Shape.Position.X + (player.entity.Shape.Extent.X / 2.0f),
-                          player.entity.Shape.Position.Y + player.entity.Shape.Extent.Y),
+                          player.Entity.Shape.Position.X + (player.Entity.Shape.Extent.X / 2.0f),
+                          player.Entity.Shape.Position.Y + player.Entity.Shape.Extent.Y),
                       new Vec2F(0.008f, 0.027f), new Vec2F(0.0f, 0.01f));
                   
                   playerShots.AddDynamicEntity(
@@ -284,14 +242,12 @@ namespace Galaga_Exercise_1 {
                 }
             }
 
-            // if none of the cases above, do this.
             if (!outofBounds && !didCollide) {
                 shot.Shape.Move();    
             }
             
         }
 
-        // what the fuck is going on here, but hey it works!
         public void IterateEnemies(Entity entity) {
             if (entity.IsDeleted())
             {
@@ -301,8 +257,7 @@ namespace Galaga_Exercise_1 {
         }
 
         public void KeyRelease(string key) {
-            // match on e.g. "KEY_UP", "KEY_1", "KEY_A", etc.
-            player.entity.Shape.MoveX(0.0f);
+            player.Entity.Shape.MoveX(0.0f);
         }
 
         public void ProcessEvent(GameEventType eventType, GameEvent<object> gameEvent) {
