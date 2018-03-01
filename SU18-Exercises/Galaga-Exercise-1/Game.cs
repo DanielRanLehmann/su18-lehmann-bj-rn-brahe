@@ -239,7 +239,8 @@ namespace Galaga_Exercise_1 {
             
             if (EntityOutOfBounds(shot, "EDGE_TOP")) {
                 shot.DeleteEntity();
-                
+                outofBounds = true;
+
             } else {
                
                 foreach (Entity enemy in enemies) {
@@ -251,7 +252,9 @@ namespace Galaga_Exercise_1 {
                         
                         enemy.DeleteEntity();
                         enemies.Iterate(IterateEnemies);
-                        
+
+                        didCollide = true;
+                        break;
                     }
                 }
             }
