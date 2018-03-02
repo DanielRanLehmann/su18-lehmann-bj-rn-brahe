@@ -74,11 +74,18 @@ namespace Galaga_Exercise_1 {
         }
         
         private void AddEnemies() {
+            // hint: y = ax+b
+            int numberOfEnemies = 9;
+            for (int i = 0; i < numberOfEnemies; i++) {
+                enemies.AddDynamicEntity(new DynamicShape(new Vec2F((0.10f * (float)i) + 0.03f, .9f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
+            }
+            
+            /*
             enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.10f, 0.1f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
             enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.30f, 0.2f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
             enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.90f, 0.3f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
             enemies.AddDynamicEntity(new DynamicShape(new Vec2F(0.05f, 0.6f), new Vec2F(0.1f, 0.1f)), new ImageStride(80, enemyStrides));
-            
+            */   
         }
         
         public void AddExplosion(float posX, float posY,
@@ -136,21 +143,22 @@ namespace Galaga_Exercise_1 {
             switch (edgeKey) {
                 
                 case "EDGE_LEFT":
-                    _outOfBounds = (e.Shape.Position.X <= 0.0f + e.Shape.Extent.X);
+                    _outOfBounds = (e.Shape.Position.X <= 0.0f);
                     break;
                     
                 case "EDGE_RIGHT":
                     _outOfBounds = (e.Shape.Position.X >= 1.0f - e.Shape.Extent.X);
                     break;
-                    
+                
                 case "EDGE_TOP":
                     _outOfBounds = (e.Shape.Position.Y >= 1.0f - e.Shape.Extent.Y);
                     break;
                     
-                case "EDGE_BOTTOM":
-                    _outOfBounds = (e.Shape.Position.Y <= 0.0f + e.Shape.Extent.Y);
+                // gives an error.
+                case "EDGE_BOTTOM": 
+                    _outOfBounds = (e.Shape.Position.Y <= 0.0f);
                     break;
-                    
+                   
                 default:
                     _outOfBounds = false;
                     break;
@@ -169,17 +177,18 @@ namespace Galaga_Exercise_1 {
                 
              case "KEY_A":
                  if (!EntityOutOfBounds(player.Entity, "EDGE_LEFT")) {
-                     player.Entity.Shape.MoveX(-0.010f);
+                     player.Entity.Shape.MoveX(-player.defaultSpeed);
                  }
                  break;
                  
               case "KEY_D":
                   if (!EntityOutOfBounds(player.Entity, "EDGE_RIGHT")) {
-                      player.Entity.Shape.MoveX(0.010f);
+                      player.Entity.Shape.MoveX(player.defaultSpeed);
                   }
 
                   break;
-                  
+              
+              /*
               case "KEY_W":
                   if (!EntityOutOfBounds(player.Entity, "EDGE_TOP")) {
                       player.Entity.Shape.MoveY(0.010f);
@@ -193,6 +202,8 @@ namespace Galaga_Exercise_1 {
                   }
 
                   break;
+              */
+              
                   
               case "KEY_SPACE":
 
@@ -234,7 +245,6 @@ namespace Galaga_Exercise_1 {
                         
                         enemy.DeleteEntity();
                         enemies.Iterate(IterateEnemies);
-
                         
                         didCollide = true;
                         break;
